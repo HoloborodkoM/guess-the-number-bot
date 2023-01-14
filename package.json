@@ -15,6 +15,7 @@
   "dependencies": {
     "dotenv": "^16.0.3",
     "eslint-plugin-import": "^2.27.4",
+    "mongodb": "^4.13.0",
     "node-telegram-bot-api": "^0.61.0",
     "nodemon": "^2.0.20",
     "prettier": "^2.8.2"
