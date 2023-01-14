@@ -3,8 +3,16 @@
 require('dotenv').config();
 const TelegramApi = require('node-telegram-bot-api');
 const token = process.env.BOT_TOKEN;
-const bot = new TelegramApi(token, { polling: true });
 const { gameAnother, gameChance, gameOption } = require('./buttons');
+const { MongoClient } = require('mongodb');
+const url = process.env.DB_URL;
+const player = new MongoClient(url);
+player.connect();
+const bot = new TelegramApi(token, { polling: true });
+const db = player.db('bot');
+const collection = db.collection('players');
+
+
 
 const chats = {};
 
@@ -54,7 +62,15 @@ const start = () => {
     console.log(msg);
     const text = msg.text;
     const chatId = msg.chat.id;
+    const uniqId = msg.from.id;
     if (text === '/start') {
+      const result = await collection.countDocuments({ id: { $eq: uniqId } });
+      console.log(result);
+      if (result === 0) {
+        collection.insertOne({
+          id: uniqId
+        });
+      }
       await bot.sendSticker(chatId, 'https://tlgrm.eu/_/stickers/9e9/6dc/9e96dc9a-90ed-3994-9c2f-d2a269f548d4/6.webp');
       return bot.sendMessage(chatId, 'Hi');
     }
