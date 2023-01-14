@@ -29,23 +29,27 @@ const anotherChance = async (chatId) => {
     gameChance);
 };
 
-const congrats = (id, x1, x2) => {
+const congrats = async (id, x1, x2, winner) => {
   let number;
   if (x1.length === 1) number = Number(x1);
   if (number === x2) {
-    return bot.sendMessage(id,
+    await collection.updateOne({ id: winner }, { $inc: { guess: 1 } });
+    return await bot.sendMessage(id,
       `Congrats! The number was ${x2}`,
       gameAnother);
   } else {
-    anotherChance(id);
+    await anotherChance(id);
   }
 };
 
-const maybe = (id, x, d1, d2, d3, d4 = -1) => {
+const maybe = async (id, x, player, d1, d2, d3, d4 = -1) => {
   if (x === d1 || x === d2 ||
       x === d3 || x === d4) {
-    return bot.sendMessage(id, `1 diapason ${x}`, gameAnother);
+    await collection.updateOne({ id: player },
+      { $inc: { almost_guess: 1 } });
+    return bot.sendMessage(id, `The correct diapason, numb ${x}`, gameAnother);
   } else {
+    await collection.updateOne({ id: player }, { $inc: { not_guess: 1 } });
     return bot.sendMessage(id,
       `Sorry! You lose, number was ${x}`,
       gameAnother);
@@ -68,7 +72,10 @@ const start = () => {
       console.log(result);
       if (result === 0) {
         collection.insertOne({
-          id: uniqId
+          id: uniqId,
+          guess: 0,
+          almost_guess: 0,
+          not_guess: 0
         });
       }
       await bot.sendSticker(chatId, 'https://tlgrm.eu/_/stickers/9e9/6dc/9e96dc9a-90ed-3994-9c2f-d2a269f548d4/6.webp');
@@ -78,7 +85,7 @@ const start = () => {
       return bot.sendMessage(chatId, `Тебя зовут ${msg.from.first_name}`);
     }
     if (text === '/game') {
-      return startGame(chatId);
+      return await startGame(chatId);
     }
     return bot.sendMessage(chatId, 'I dont know');
   });
@@ -89,45 +96,46 @@ bot.on('callback_query', async msg => {
   const chatId = msg.message.chat.id;
   const hiddenNumber = chats[chatId];
   const pickedVariant = msg.data;
+  const idPlayer = msg.from.id;
   switch (pickedVariant) {
   case '0':
-    congrats(chatId, pickedVariant, hiddenNumber);
+    congrats(chatId, pickedVariant, hiddenNumber, idPlayer);
     break;
   case '1':
-    congrats(chatId, pickedVariant, hiddenNumber);
+    congrats(chatId, pickedVariant, hiddenNumber, idPlayer);
     break;
   case '2':
-    congrats(chatId, pickedVariant, hiddenNumber);
+    congrats(chatId, pickedVariant, hiddenNumber, idPlayer);
     break;
   case '3':
-    congrats(chatId, pickedVariant, hiddenNumber);
+    congrats(chatId, pickedVariant, hiddenNumber, idPlayer);
     break;
   case '4':
-    congrats(chatId, pickedVariant, hiddenNumber);
+    congrats(chatId, pickedVariant, hiddenNumber, idPlayer);
     break;
   case '5':
-    congrats(chatId, pickedVariant, hiddenNumber);
+    congrats(chatId, pickedVariant, hiddenNumber, idPlayer);
     break;
   case '6':
-    congrats(chatId, pickedVariant, hiddenNumber);
+    congrats(chatId, pickedVariant, hiddenNumber, idPlayer);
     break;
   case '7':
-    congrats(chatId, pickedVariant, hiddenNumber);
+    congrats(chatId, pickedVariant, hiddenNumber, idPlayer);
     break;
   case '8':
-    congrats(chatId, pickedVariant, hiddenNumber);
+    congrats(chatId, pickedVariant, hiddenNumber, idPlayer);
     break;
   case '9':
-    congrats(chatId, pickedVariant, hiddenNumber);
+    congrats(chatId, pickedVariant, hiddenNumber, idPlayer);
     break;
   case 'first diapason':
-    maybe(chatId, hiddenNumber, 0, 1, 2, 3);
+    maybe(chatId, hiddenNumber, idPlayer, 0, 1, 2, 3);
     break;
   case 'second diapason':
-    maybe(chatId, hiddenNumber, 4, 5, 6);
+    maybe(chatId, hiddenNumber, idPlayer, 4, 5, 6);
     break;
   case 'third diapason':
-    maybe(chatId, hiddenNumber, 7, 8, 9);
+    maybe(chatId, hiddenNumber, idPlayer, 7, 8, 9);
     break;
   case '/again':
     startGame(chatId);

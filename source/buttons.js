@@ -42,6 +42,9 @@ module.exports = {
         [
           { text: 'Играть ещё раз', callback_data: '/again' },
           { text: 'Я наигрался', callback_data: '/cancel' }
+        ],
+        [
+          { text: 'Посмотреть результати', callback_data: '/result' },
         ]
       ]
     })
