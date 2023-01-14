@@ -4,7 +4,7 @@ require('dotenv').config();
 const TelegramApi = require('node-telegram-bot-api');
 const token = process.env.BOT_TOKEN;
 const bot = new TelegramApi(token, { polling: true });
-const { gameAnother, gameOption } = require('./buttons');
+const { gameAnother, gameChance, gameOption } = require('./buttons');
 
 const chats = {};
 
@@ -13,6 +13,35 @@ const startGame = async (chatId) => {
   const randomNumber = Math.floor(Math.random() * 10);
   chats[chatId] = randomNumber;
   await bot.sendMessage(chatId, 'Go', gameOption);
+};
+
+const anotherChance = async (chatId) => {
+  await bot.sendMessage(chatId,
+    'Sorry! You its not number',
+    gameChance);
+};
+
+const congrats = (id, x1, x2) => {
+  let number;
+  if (x1.length === 1) number = Number(x1);
+  if (number === x2) {
+    return bot.sendMessage(id,
+      `Congrats! The number was ${x2}`,
+      gameAnother);
+  } else {
+    anotherChance(id);
+  }
+};
+
+const maybe = (id, x, d1, d2, d3, d4 = -1) => {
+  if (x === d1 || x === d2 ||
+      x === d3 || x === d4) {
+    return bot.sendMessage(id, `1 diapason ${x}`, gameAnother);
+  } else {
+    return bot.sendMessage(id,
+      `Sorry! You lose, number was ${x}`,
+      gameAnother);
+  }
 };
 
 const start = () => {
@@ -40,20 +69,58 @@ const start = () => {
 };
 
 bot.on('callback_query', async msg => {
-  const data = msg.data;
+  console.log(msg);
   const chatId = msg.message.chat.id;
-  const value = chats[chatId];
-  if (data === '/again') {
-    return startGame(chatId);
-  }
-  if (data === value) {
-    return await bot.sendMessage(chatId,
-      `Congrats! The number was ${data}`,
-      gameAnother);
-  } else {
-    return await bot.sendMessage(chatId,
-      `Sorry! You lose, number wa ${value}`,
-      gameAnother);
+  const hiddenNumber = chats[chatId];
+  const pickedVariant = msg.data;
+  switch (pickedVariant) {
+  case '0':
+    congrats(chatId, pickedVariant, hiddenNumber);
+    break;
+  case '1':
+    congrats(chatId, pickedVariant, hiddenNumber);
+    break;
+  case '2':
+    congrats(chatId, pickedVariant, hiddenNumber);
+    break;
+  case '3':
+    congrats(chatId, pickedVariant, hiddenNumber);
+    break;
+  case '4':
+    congrats(chatId, pickedVariant, hiddenNumber);
+    break;
+  case '5':
+    congrats(chatId, pickedVariant, hiddenNumber);
+    break;
+  case '6':
+    congrats(chatId, pickedVariant, hiddenNumber);
+    break;
+  case '7':
+    congrats(chatId, pickedVariant, hiddenNumber);
+    break;
+  case '8':
+    congrats(chatId, pickedVariant, hiddenNumber);
+    break;
+  case '9':
+    congrats(chatId, pickedVariant, hiddenNumber);
+    break;
+  case 'first diapason':
+    maybe(chatId, hiddenNumber, 0, 1, 2, 3);
+    break;
+  case 'second diapason':
+    maybe(chatId, hiddenNumber, 4, 5, 6);
+    break;
+  case 'third diapason':
+    maybe(chatId, hiddenNumber, 7, 8, 9);
+    break;
+  case '/again':
+    startGame(chatId);
+    break;
+  case '/cancel':
+    bot.sendMessage(chatId, 'Ok, bye');
+    break;
+  default:
+    return;
   }
 });
 

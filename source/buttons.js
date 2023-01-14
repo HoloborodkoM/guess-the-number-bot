@@ -25,11 +25,23 @@ module.exports = {
       ]
     })
   },
+  gameChance: {
+    reply_markup: JSON.stringify({
+      inline_keyboard: [
+        [
+          { text: 'Диапазон 0-3', callback_data: 'first diapason' },
+          { text: 'Диапазон 4-6', callback_data: 'second diapason' },
+          { text: 'Диапазон 7-9', callback_data: 'third diapason' }
+        ]
+      ]
+    })
+  },
   gameAnother: {
     reply_markup: JSON.stringify({
       inline_keyboard: [
         [
-          { text: 'Play again', callback_data: '/again' }
+          { text: 'Играть ещё раз', callback_data: '/again' },
+          { text: 'Я наигрался', callback_data: '/cancel' }
         ]
       ]
     })
