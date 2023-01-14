@@ -1,7 +1,7 @@
 'use strict';
 
 module.exports = {
-  gameOption: {
+  gameStart: {
     reply_markup: JSON.stringify({
       inline_keyboard: [
         [
@@ -25,7 +25,7 @@ module.exports = {
       ]
     })
   },
-  gameChance: {
+  gameSecond: {
     reply_markup: JSON.stringify({
       inline_keyboard: [
         [
@@ -40,8 +40,8 @@ module.exports = {
     reply_markup: JSON.stringify({
       inline_keyboard: [
         [
-          { text: 'Играть ещё раз', callback_data: '/again' },
-          { text: 'Я наигрался', callback_data: '/cancel' }
+          { text: 'Играть ещё раз', callback_data: '/keep' },
+          { text: 'Я наигрался', callback_data: '/end' }
         ],
         [
           { text: 'Посмотреть результати', callback_data: '/result' },

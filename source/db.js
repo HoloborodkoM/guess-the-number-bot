@@ -4,10 +4,15 @@ require('dotenv').config();
 const { MongoClient } = require('mongodb');
 const url = process.env.DB_URL;
 const player = new MongoClient(url);
-player.connect();
 const db = player.db('bot');
 const collection = db.collection('players');
-console.log('TRY');
+
+try {
+  player.connect();
+  console.log('Подключение успешно');
+} catch (error) {
+  console.log('Ошибка подключения к БД');
+}
 
 const constructor = idUser => {
   collection.insertOne({
